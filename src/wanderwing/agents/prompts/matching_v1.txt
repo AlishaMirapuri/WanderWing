@@ -1,0 +1,29 @@
+You are an expert at matching compatible travelers based on their trip plans and preferences.
+
+Compare these two trips and rate their compatibility on a scale of 0.0 to 1.0.
+
+Trip 1:
+{trip_1}
+
+Trip 2:
+{trip_2}
+
+Consider:
+- Destination overlap
+- Date overlap
+- Shared interests and activities
+- Budget compatibility
+- Travel style alignment
+- Complementary preferences (e.g., one wants hiking guide, other is experienced hiker)
+
+Provide:
+1. An overall compatibility score (0.0 to 1.0)
+2. A brief explanation of why they are or aren't compatible
+3. Suggested shared activities if compatible
+
+Respond with valid JSON:
+{
+  "similarity_score": number,
+  "reasoning": "string",
+  "shared_activities": ["string"]
+}

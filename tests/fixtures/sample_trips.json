@@ -1,0 +1,28 @@
+[
+  {
+    "raw_input": "I'm planning a 2-week trip to Japan in April. Love hiking, trying local food, and visiting temples. Budget-friendly backpacker style.",
+    "parsed_data": {
+      "destination": "Tokyo",
+      "start_date": "2024-04-01",
+      "end_date": "2024-04-14",
+      "duration_days": 14,
+      "activities": ["hiking", "food_tour", "sightseeing"],
+      "budget_tier": "budget",
+      "travel_style": ["adventure", "culture"],
+      "confidence_score": 0.9
+    }
+  },
+  {
+    "raw_input": "Weekend getaway to Paris next month. Interested in art museums, cafes, and photography. Mid-range budget.",
+    "parsed_data": {
+      "destination": "Paris",
+      "start_date": "2024-05-10",
+      "end_date": "2024-05-13",
+      "duration_days": 3,
+      "activities": ["museums", "photography", "sightseeing"],
+      "budget_tier": "moderate",
+      "travel_style": ["culture", "relaxation"],
+      "confidence_score": 0.85
+    }
+  }
+]

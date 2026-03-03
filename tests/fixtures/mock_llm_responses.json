@@ -1,0 +1,22 @@
+{
+  "extraction_success": {
+    "destination": "Tokyo",
+    "secondary_destinations": ["Kyoto", "Osaka"],
+    "start_date": "2024-04-01",
+    "end_date": "2024-04-10",
+    "duration_days": 10,
+    "activities": ["hiking", "food_tour", "sightseeing", "nature"],
+    "budget_tier": "moderate",
+    "travel_style": ["adventure", "culture"],
+    "flexibility_days": 2,
+    "accommodation_type": "hostel",
+    "group_size_preference": "solo",
+    "confidence_score": 0.9,
+    "ambiguities": []
+  },
+  "matching_high_score": {
+    "similarity_score": 0.85,
+    "reasoning": "Both travelers are visiting Tokyo at the same time with overlapping interests in hiking and food tours. Compatible budget levels and travel styles.",
+    "shared_activities": ["Hiking Mount Takao", "Tsukiji Fish Market food tour", "Temple visits in Asakusa"]
+  }
+}

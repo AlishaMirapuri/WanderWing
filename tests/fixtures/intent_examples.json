@@ -1,0 +1,105 @@
+[
+  {
+    "id": 1,
+    "name": "Clear multi-city trip",
+    "input": "Planning a 2-week trip to Japan in April. Want to spend 5 days in Tokyo exploring temples and trying street food, then take the bullet train to Kyoto for 4 days, and finish with 3 days in Osaka. Love hiking and food tours. Budget around $150/day.",
+    "expected_confidence": 0.9,
+    "expected_destination": "Tokyo",
+    "expected_stays": 3,
+    "expected_budget_tier": "moderate",
+    "notes": "Complete information, specific destinations and duration"
+  },
+  {
+    "id": 2,
+    "name": "Vague dates",
+    "input": "Thinking about Lisbon for a long weekend sometime next month. Love food markets and live music. Not into clubbing. Happy to meet other travelers for brunch.",
+    "expected_confidence": 0.65,
+    "expected_destination": "Lisbon",
+    "expected_stays": 1,
+    "expected_ambiguities": ["dates", "budget"],
+    "notes": "Missing specific dates and budget"
+  },
+  {
+    "id": 3,
+    "name": "Budget backpacker",
+    "input": "3-week budget backpacking trip through Southeast Asia. Starting in Bangkok, then maybe Chiang Mai, islands in Thailand, and Cambodia for Angkor Wat. Hostels only. Under $30/day.",
+    "expected_confidence": 0.7,
+    "expected_destination": "Bangkok",
+    "expected_budget_tier": "budget",
+    "expected_activities": ["local_experiences", "sightseeing", "beach"],
+    "notes": "Clear budget tier, vague exact routing"
+  },
+  {
+    "id": 4,
+    "name": "Luxury trip",
+    "input": "Booking a luxury resort stay in Maldives for our honeymoon. 7 nights, all-inclusive, overwater bungalow. Spa, snorkeling, romantic dinners. Budget is not a concern.",
+    "expected_confidence": 0.85,
+    "expected_destination": "Maldives",
+    "expected_budget_tier": "luxury",
+    "expected_activities": ["relaxation", "water_sports", "beach"],
+    "notes": "Clear luxury tier, specific duration"
+  },
+  {
+    "id": 5,
+    "name": "Solo hiker",
+    "input": "Solo hiking trip to Patagonia in November. Want to do the W Trek in Torres del Paine. Planning about 10 days total including travel. Experienced hiker, comfortable camping. Budget-conscious but willing to pay for guided portions if needed.",
+    "expected_confidence": 0.8,
+    "expected_destination": "Torres del Paine",
+    "expected_budget_tier": "moderate",
+    "expected_activities": ["hiking", "nature", "adventure_sports"],
+    "traveling_solo": true,
+    "notes": "Specific activity focus, some flexibility"
+  },
+  {
+    "id": 6,
+    "name": "European city break",
+    "input": "Long weekend in Paris, April 15-18. Interested in art museums, photography, and good cafes. Mid-range budget, prefer Airbnb in Marais or Latin Quarter.",
+    "expected_confidence": 0.95,
+    "expected_destination": "Paris",
+    "expected_stays": 1,
+    "expected_nights": 3,
+    "expected_activities": ["museums", "photography", "sightseeing"],
+    "notes": "Complete information, specific dates and neighborhood"
+  },
+  {
+    "id": 7,
+    "name": "Digital nomad",
+    "input": "Looking for a place to work remotely for a month. Considering Bali, Chiang Mai, or Lisbon. Need good wifi and coworking spaces. Budget around $2000/month total. Want to meet other digital nomads, do some weekend trips, yoga.",
+    "expected_confidence": 0.6,
+    "expected_destination": "Bali",
+    "expected_ambiguities": ["multiple destinations", "exact choice", "dates"],
+    "expected_activities": ["yoga_wellness", "local_experiences"],
+    "notes": "Multiple possible destinations, needs clarification"
+  },
+  {
+    "id": 8,
+    "name": "Family trip",
+    "input": "Taking kids to Disney World in Orlando for spring break. March 20-27. Staying on-site at a Disney resort. Want to do all the parks, maybe a day at the beach too. Looking for families with kids similar age (8 and 10) to meet up with.",
+    "expected_confidence": 0.9,
+    "expected_destination": "Orlando",
+    "expected_budget_tier": "comfortable",
+    "traveling_solo": false,
+    "preferred_group_size": 4,
+    "notes": "Complete family trip, specific dates"
+  },
+  {
+    "id": 9,
+    "name": "Minimal information",
+    "input": "Going somewhere warm for a week. Need a break.",
+    "expected_confidence": 0.2,
+    "expected_destination": "Unknown",
+    "expected_ambiguities": ["destination", "dates", "budget", "activities"],
+    "expected_clarification_questions": 3,
+    "notes": "Extremely vague, should trigger many clarification questions"
+  },
+  {
+    "id": 10,
+    "name": "Contradictory preferences",
+    "input": "Want to relax on a beach in Thailand but also do intense hiking and wake up early for sunrise adventures. Prefer luxury resorts but also want authentic local experiences and street food. Traveling solo but don't like being alone.",
+    "expected_confidence": 0.5,
+    "expected_destination": "Thailand",
+    "expected_ambiguities": ["contradictory pace", "conflicting preferences"],
+    "expected_activities": ["beach", "hiking", "relaxation", "adventure_sports"],
+    "notes": "Contains contradictions that should be flagged"
+  }
+]
