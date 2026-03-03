@@ -2,7 +2,7 @@
 
 ## Overview
 
-This implementation provides a production-ready, comprehensive data model layer and API schema system for WanderWing, designed to demonstrate senior-level software engineering skills for AI company roles.
+This implementation provides a comprehensive data model layer and API schema system for WanderWing, enabling traveler matching with LLM-powered intent parsing.
 
 ---
 
@@ -476,5 +476,3 @@ except ValidationError as e:
 6. **Extensible**: Easy to add fields, variants, new event types
 7. **AI-Native**: Built for LLM workflows (confidence scores, prompt versions, hybrid scoring)
 8. **Product-Minded**: Experiments, metrics, safety features baked in
-
-This demonstrates the intersection of **AI engineering**, **backend architecture**, and **product thinking** that top AI companies value.
