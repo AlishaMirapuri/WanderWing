@@ -71,6 +71,9 @@ dmypy.json
 # Data files
 data/*
 !data/.gitkeep
+!data/activity_repository.py
+!data/activities/
+!data/activities/*.json
 
 # Temporary files
 tmp/
