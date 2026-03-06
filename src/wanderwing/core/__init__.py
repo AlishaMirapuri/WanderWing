@@ -1,14 +1,9 @@
-"""Core business logic."""
+"""Core business logic.
 
-from .experiments import ExperimentTracker, get_experiment_variant
-from .matching import MatchingEngine, calculate_match_score
-from .safety import SafetyFilter, check_user_blocked
-
-__all__ = [
-    "MatchingEngine",
-    "calculate_match_score",
-    "SafetyFilter",
-    "check_user_blocked",
-    "ExperimentTracker",
-    "get_experiment_variant",
-]
+Sub-modules are imported on-demand to avoid eager loading of the DB+schema
+chain (which requires optional dependencies like email-validator).
+Import submodules explicitly:
+    from wanderwing.core.matching import MatchingEngine
+    from wanderwing.core.experiments import ExperimentTracker
+    from wanderwing.core.event_logger import event_logger
+"""

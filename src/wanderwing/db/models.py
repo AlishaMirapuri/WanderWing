@@ -180,9 +180,31 @@ class Experiment(Base):
 
     # Conversion tracking
     converted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    metadata: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
+    metadata_: Mapped[dict] = mapped_column("metadata", JSON, default=dict, nullable=False)
 
     # Timestamp
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class ExperimentEvent(Base):
+    """
+    Event log for the UX flow A/B/C experiment.
+
+    Stores one row per user action (profile_completed, parse_accepted, etc.).
+    user_id is a plain string so it works with both session UUIDs and synthetic IDs.
+    metadata_ uses a trailing underscore to avoid clashing with SQLAlchemy internals.
+    """
+
+    __tablename__ = "experiment_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    variant: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
+    event_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    metadata_: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

@@ -101,7 +101,7 @@ class ExperimentTracker:
             name=experiment_name,
             variant=variant,
             user_id=user_id,
-            metadata=metadata or {},
+            metadata_=metadata or {},
         )
         self.db.add(experiment_record)
         self.db.commit()
@@ -127,7 +127,7 @@ class ExperimentTracker:
         if result:
             result.converted = True
             if metadata:
-                result.metadata.update(metadata)
+                result.metadata_.update(metadata)
             self.db.commit()
 
 

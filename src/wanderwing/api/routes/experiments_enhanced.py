@@ -1,152 +1,110 @@
-"""Experiment and A/B testing API endpoints."""
+"""Experiment and A/B testing API endpoints — fully implemented."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Header, HTTPException, status
 
-from wanderwing.api.dependencies import get_current_user_id
-from wanderwing.schemas.experiment import ExperimentSummary
+from wanderwing.core.event_logger import event_logger
 
 router = APIRouter(prefix="/experiments", tags=["experiments"])
 
 
-@router.get("/summary", response_model=list[ExperimentSummary])
-async def get_experiments_summary(
-    status_filter: str | None = None,
-    user_id: int = Depends(get_current_user_id),
-) -> list[ExperimentSummary]:
+@router.get("/summary")
+async def get_experiments_summary() -> list[dict]:
     """
-    Get summary of all experiments.
+    Get per-variant metrics for all experiments.
 
-    Returns aggregated metrics for all experiments:
-    - Variant performance (conversion rates)
-    - Statistical significance
-    - Winning variant if determined
-    - Total participants
-    - Experiment status and timeline
-
-    Query parameters:
-    - status_filter: Filter by status (active, completed, etc.)
-
-    This endpoint is primarily for:
-    - Product managers reviewing experiment results
-    - Dashboard metrics display
-    - Deciding whether to ship features
-
-    Public access (no auth required) for demo purposes.
-    In production, restrict to admin/product team.
+    Returns a list of VariantMetrics dicts with:
+    - variant, user_count
+    - completion_rate, match_clickthrough_rate
+    - recommendation_satisfaction, parse_correction_rate
+    - funnel (event_type -> count)
     """
-    # TODO: Implement experiment summary
-    # 1. Query all experiments (optionally filtered by status)
-    # 2. For each experiment:
-    #    a. Calculate metrics per variant
-    #    b. Determine statistical significance
-    #    c. Identify winning variant if significant
-    # 3. Return aggregated summaries
-
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Experiment summary not yet implemented",
-    )
+    metrics = event_logger.compute_metrics()
+    return [m.to_dict() for m in metrics.values()]
 
 
-@router.get("/{experiment_name}")
-async def get_experiment_details(
-    experiment_name: str,
+@router.get("/ux_flow")
+async def get_ux_flow_details() -> dict:
+    """
+    Detailed breakdown of the UX flow experiment, including funnel per variant.
+    """
+    metrics = event_logger.compute_metrics()
+    return {
+        "experiment": "ux_flow",
+        "variants": {
+            variant: {
+                **m.to_dict(),
+                "traffic_weight": _weights().get(variant, 0.0),
+            }
+            for variant, m in metrics.items()
+        },
+    }
+
+
+@router.get("/ux_flow/my-variant")
+async def get_my_ux_variant(x_user_id: str = Header(default="anonymous")) -> dict:
+    """
+    Return the variant deterministically assigned to the requesting user.
+
+    Pass the user's session UUID in the `X-User-Id` header.
+    """
+    variant = event_logger.assign_variant(x_user_id)
+    return {"user_id": x_user_id, "variant": variant, "experiment": "ux_flow"}
+
+
+@router.post("/ux_flow/events")
+async def log_ux_flow_event(
+    payload: dict,
+    x_user_id: str = Header(default="anonymous"),
 ) -> dict:
     """
-    Get detailed metrics for a specific experiment.
+    Log a single experiment event via HTTP (alternative to direct DB writes).
 
-    Returns:
-    - Complete experiment definition
-    - Variant-by-variant breakdown
-    - Statistical analysis
-    - Conversion funnel data
-    - Confidence intervals
-    - P-values and significance tests
-    - Time series data (conversion rate over time)
+    Body: {"event_type": str, "metadata": dict}
     """
-    # TODO: Implement detailed experiment retrieval
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Experiment details not yet implemented",
-    )
+    event_type = payload.get("event_type")
+    metadata = payload.get("metadata", {})
+    if not event_type:
+        raise HTTPException(status_code=400, detail="event_type is required")
+    variant = event_logger.assign_variant(x_user_id)
+    event_logger.log(x_user_id, variant, event_type, metadata)
+    return {"ok": True, "variant": variant, "event_type": event_type}
 
 
-@router.get("/{experiment_name}/my-variant")
-async def get_my_experiment_variant(
-    experiment_name: str,
-    user_id: int = Depends(get_current_user_id),
-) -> dict:
+@router.post("/events")
+async def log_event(payload: dict) -> dict:
     """
-    Get which variant the current user is assigned to.
+    Log an event with explicit user_id.
 
-    Useful for:
-    - Frontend determining which UI to show
-    - Debugging experiment assignment
-    - User transparency
-
-    Returns:
-    - Variant name
-    - Variant configuration
-    - Assignment timestamp
+    Body: {"user_id": str, "event_type": str, "metadata": dict}
     """
-    # TODO: Implement variant retrieval for user
-    # 1. Check if user has existing assignment
-    # 2. If not, assign deterministically based on user_id
-    # 3. Track assignment
-    # 4. Return variant details
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Experiment variant retrieval not yet implemented",
-    )
-
-
-@router.post("/{experiment_name}/convert")
-async def track_conversion(
-    experiment_name: str,
-    conversion_type: str,
-    conversion_value: float | None = None,
-    user_id: int = Depends(get_current_user_id),
-) -> dict:
-    """
-    Track a conversion event for an experiment.
-
-    Called when user completes the success metric for an experiment.
-    For example:
-    - Experiment: "new_onboarding_flow"
-    - Conversion: "profile_completed"
-    - Triggered when user finishes profile setup
-
-    Returns:
-    - Confirmation of tracking
-    - Updated conversion status
-    """
-    # TODO: Implement conversion tracking
-    # 1. Find user's experiment assignment
-    # 2. Mark as converted with timestamp
-    # 3. Record conversion value if applicable
-    # 4. Update aggregated metrics
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Conversion tracking not yet implemented",
-    )
+    user_id = payload.get("user_id", "anonymous")
+    event_type = payload.get("event_type")
+    metadata = payload.get("metadata", {})
+    if not event_type:
+        raise HTTPException(status_code=400, detail="event_type is required")
+    variant = event_logger.assign_variant(user_id)
+    event_logger.log(user_id, variant, event_type, metadata)
+    return {"ok": True, "user_id": user_id, "variant": variant, "event_type": event_type}
 
 
 @router.get("/active/my-assignments")
-async def get_my_active_experiments(
-    user_id: int = Depends(get_current_user_id),
-) -> dict:
+async def get_my_active_experiments(x_user_id: str = Header(default="anonymous")) -> dict:
     """
-    Get all active experiments user is enrolled in.
-
-    Returns:
-    - List of experiments
-    - Variant assignments
-    - Conversion status
-
-    Useful for debugging and user transparency.
+    List all active experiments and the requesting user's variant assignment.
     """
-    # TODO: Implement active experiment retrieval
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Active experiments retrieval not yet implemented",
-    )
+    from wanderwing.core.experiment_registry import EXPERIMENT_REGISTRY
+
+    assignments = {}
+    for exp_name, exp_config in EXPERIMENT_REGISTRY.items():
+        assignments[exp_name] = {
+            "variant": event_logger.assign_variant(x_user_id),
+            "weights": exp_config.variants,
+        }
+    return {"user_id": x_user_id, "experiments": assignments}
+
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+def _weights() -> dict[str, float]:
+    from wanderwing.core.experiment_registry import UX_FLOW_EXPERIMENT
+    return UX_FLOW_EXPERIMENT.variants
